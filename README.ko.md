@@ -4,6 +4,8 @@
 실제 GitLab·LLM·Slack 계정 없이 Python 3.11 이상에서 실행합니다.
 
 ```sh
+git clone https://github.com/swlee3306/gitlab-mr-review-automation.git
+cd gitlab-mr-review-automation
 python3 -m reviewflow demo
 python3 -m unittest discover -s tests -v
 ```

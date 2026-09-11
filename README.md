@@ -7,6 +7,8 @@ Run a useful demo without a GitLab account, API key, database server, or depende
 Requires Python 3.11 or newer. [한국어 안내](README.ko.md)
 
 ```sh
+git clone https://github.com/swlee3306/gitlab-mr-review-automation.git
+cd gitlab-mr-review-automation
 python3 -m reviewflow demo
 python3 -m unittest discover -s tests -v
 ```
