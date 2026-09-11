@@ -129,4 +129,8 @@ has already run.
 
 The implementation uses only the Python standard library. Keep a behavior change
 paired with a regression test and keep provider-specific code outside the state machine.
-See [security guidance](SECURITY.md). A distribution license has not yet been selected.
+See [security guidance](SECURITY.md).
+
+## License
+
+[MIT](LICENSE) · Copyright (c) 2026 swlee3306.

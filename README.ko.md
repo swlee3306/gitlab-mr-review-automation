@@ -21,3 +21,7 @@ python3 -m unittest discover -s tests -v
 webhook 서버·LLM·Slack 연동은 포함하지 않았습니다. `.env.example`은 자동으로 읽지 않습니다.
 
 입력 형식·상태·제약과 확장 계약은 [영문 README](README.md)에 설명했습니다.
+
+## 라이선스
+
+[MIT 라이선스](LICENSE)를 적용합니다. Copyright (c) 2026 swlee3306.
