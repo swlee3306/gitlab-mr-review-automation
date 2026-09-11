@@ -1,0 +1,10 @@
+{
+  "project": "example/service",
+  "iid": 7,
+  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "changes": {
+    "app.py": {
+      "8": "print(\"hello from a synthetic fixture\")"
+    }
+  }
+}
