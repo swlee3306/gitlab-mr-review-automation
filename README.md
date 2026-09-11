@@ -1,6 +1,6 @@
 # GitLab MR Review Automation
 
-An offline reference implementation of the hard parts around automated code review:
+A reference implementation of the hard parts around automated code review:
 deduplication, commit freshness, retry limits, worker ownership, and finding validation.
 
 Run a useful demo without a GitLab account, API key, database server, or dependency install.
@@ -96,14 +96,29 @@ execution timeout.
 
 ## Scope
 
-No live webhook server, GitLab API client, Slack publisher, or LLM integration is
-included. There is no external exactly-once delivery claim: completion records local
+The optional `gitlab` command reads real GitLab changes over HTTPS and reviews them
+locally. No live webhook server, Slack publisher, comment publisher, or LLM integration
+is included. There is no external exactly-once delivery claim: completion records local
 work, and results are printed locally. The final SHA check cannot eliminate a future
 race at an external publisher; such an adapter needs its own reconciliation protocol.
 
-`.env.example` documents placeholders for a future integration. The offline CLI does
-not load it and does not request credentials. Never replace the example with real
-values in version control.
+`.env.example` documents configuration. The CLI does not load this file automatically.
+Only the `gitlab` command reads `GITLAB_TOKEN` from the environment. Never commit a real value.
+
+## Read an actual GitLab merge request
+
+```sh
+# Set GITLAB_TOKEN through your local secret manager, not a command-line argument.
+python3 -m reviewflow gitlab --url https://gitlab.example.com \
+  --project example/service --iid 7 --db review-state.sqlite3
+```
+
+The hostname is an example. This mode issues GET requests only, uses a local deterministic
+reviewer, never posts findings, and refuses redirects to avoid forwarding credentials.
+It handles paginated diffs, maps added lines, rejects collapsed/truncated data, bounds
+response sizes and rechecks the head SHA. Permissions must be limited to the repositories
+you intend to read. No company service was contacted during verification; adapter tests
+use a local HTTP fixture and synthetic responses.
 
 The tests cover retry exhaustion, conflicting content, two-connection claims,
 lease fencing, restarts, privacy, invalid finding locations and CLI failure output.

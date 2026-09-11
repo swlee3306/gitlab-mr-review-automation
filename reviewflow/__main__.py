@@ -1,11 +1,13 @@
-"""Offline CLI: no credentials, network, webhooks or external publication."""
+"""Local demo or opt-in read-only GitLab input; no external publication."""
 import argparse
 import json
 from pathlib import Path
 import tempfile
 import sqlite3
+import os
 
 from .core import Event, Finding, Store, UnsafeInput, run_once
+from .gitlab import GitLabReader, GitLabError
 
 
 def fake_reviewer(event):
@@ -45,6 +47,11 @@ def main():
     run.add_argument('event', type=Path)
     run.add_argument('--head', required=True, help='current commit SHA; supplied by the offline harness')
     run.add_argument('--db', type=Path, required=True, help='local state database')
+    live = sub.add_parser('gitlab', help='read real GitLab changes; review locally without posting')
+    live.add_argument('--url', required=True, help='HTTPS GitLab origin, without credentials')
+    live.add_argument('--project', required=True)
+    live.add_argument('--iid', required=True, type=int)
+    live.add_argument('--db', required=True, type=Path)
     args = parser.parse_args()
     try:
         if args.command == 'demo':
@@ -52,10 +59,19 @@ def main():
             with tempfile.TemporaryDirectory(prefix='reviewflow-') as directory, Store(Path(directory) / 'jobs.db') as store:
                 for _ in range(2): print(json.dumps(run_once(store, event, lambda: event.sha, fake_reviewer), indent=2))
             return 0
-        event = load_event(args.event)
-        with Store(args.db) as store: result = run_once(store, event, lambda: args.head, fake_reviewer)
+        if args.command == 'gitlab':
+            reader = GitLabReader(args.url, os.environ.get('GITLAB_TOKEN', ''))
+            event = reader.event(args.project, args.iid)
+            head = lambda: reader.head(args.project, args.iid)
+        else:
+            event = load_event(args.event)
+            head = lambda: args.head
+        with Store(args.db) as store: result = run_once(store, event, head, fake_reviewer)
         print(json.dumps(result, indent=2))
         return 0 if result['status'] in {'completed', 'duplicate'} else 1
+    except GitLabError as error:
+        print(json.dumps({'status': 'gitlab_error', 'code': str(error)}))
+        return 2
     except (ValueError, TypeError, AttributeError, OSError, sqlite3.Error, RecursionError):
         print(json.dumps({'status': 'invalid_input', 'message': 'Check the event schema, privacy policy and local file access.'}))
         return 2

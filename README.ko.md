@@ -15,8 +15,9 @@ python3 -m unittest discover -s tests -v
 일시 오류의 최대 3회 시도, 만료 후 재할당된 작업에 대한 이전 worker의 완료 차단입니다.
 원문 소스나 reviewer 예외 메시지는 상태 DB에 저장하지 않습니다.
 
-실제 webhook 수신·외부 API 연동·메시지 게시 기능은 포함하지 않았습니다.
-제공되는 `head`와 `reviewer` adapter 경계에서 확장할 수 있습니다.
-`.env.example`은 안내용이며 CLI가 읽지 않습니다. 실제 토큰은 필요하지 않습니다.
+`gitlab` 명령은 HTTPS GitLab API에서 MR 변경분을 읽어 로컬에서 검사합니다.
+페이지 나눔·변경 라인·SHA 일치 여부를 검증하고, 댓글 게시나 배포는 하지 않습니다.
+실제 연동은 환경변수 `GITLAB_TOKEN`을 사용하며, `demo`와 테스트에는 토큰이 필요 없습니다.
+webhook 서버·LLM·Slack 연동은 포함하지 않았습니다. `.env.example`은 자동으로 읽지 않습니다.
 
 입력 형식·상태·제약과 확장 계약은 [영문 README](README.md)에 설명했습니다.
