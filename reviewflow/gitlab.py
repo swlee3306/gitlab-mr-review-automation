@@ -70,6 +70,7 @@ class GitLabReader:
                 payload = json.loads(raw)
                 return payload, response.headers.get('X-Next-Page', '')
         except HTTPError as error:
+            error.close()
             raise GitLabError('http_' + str(error.code)) from None
         except (URLError, TimeoutError, OSError, ValueError):
             raise GitLabError('transport_or_payload') from None
