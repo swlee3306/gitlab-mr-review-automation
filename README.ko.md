@@ -24,6 +24,12 @@ webhook 서버·LLM·Slack 연동은 포함하지 않았습니다. `.env.example
 
 입력 형식·상태·제약과 확장 계약은 [영문 README](README.md)에 설명했습니다.
 
+## 설계와 검증 사례
+
+[5분 코드 리뷰 가이드](docs/ENGINEERING_WALKTHROUGH.ko.md)에서 중복 처리, 커밋 변경,
+만료된 작업자의 결과 차단을 실제 테스트와 연결해 확인할 수 있습니다.
+운영 도입 효과나 AI 리뷰 정확도를 주장하는 사례가 아니라 공개 구현의 검증 기록입니다.
+
 ## 라이선스
 
 [MIT 라이선스](LICENSE)를 적용합니다. Copyright (c) 2026 swlee3306.
