@@ -2,11 +2,25 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import threading
 import unittest
+from io import BytesIO
+from urllib.error import HTTPError
 
 from reviewflow.gitlab import GitLabReader, GitLabError, added_lines
 
 
 class ReaderTests(unittest.TestCase):
+    def test_http_error_response_is_closed(self):
+        body = BytesIO(b'not-for-diagnostics')
+        error = HTTPError('https://gitlab.example.com', 302, 'redirect', {}, body)
+        class FailingOpener:
+            def open(self, request, timeout):
+                raise error
+        reader = GitLabReader('https://gitlab.example.com', 'SYNTHETIC')
+        reader.opener = FailingOpener()
+        with self.assertRaisesRegex(GitLabError, '^http_302$'):
+            reader.head('example/service', 1)
+        self.assertTrue(body.closed)
+
     def reader(self, replies):
         reader = GitLabReader('https://gitlab.example.com', 'SYNTHETIC')
         iterator=iter(replies);reader.get=lambda _:next(iterator)
